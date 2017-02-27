@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace Billograms.Net.Model.Billogram
+namespace Billogram.Net.Model.BillogramHelperModel
 {
 	public class BillogramItems
 	{

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using Billograms.Net.Model.Billogram;
+using System.Threading.Tasks;
+using Billogram.Net.Model.BilloCustomer;
+using Billogram.Net.Model.BillogramHelperModel;
 using Billogram.Net.Utility;
-using Billograms.Net.ViewModel;
+using Billogram.Net.ViewModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BillogramsTest
+namespace Billogram.Net.Test
 {
 	[TestClass]
 	public class BillogramUtilityTest
@@ -33,8 +35,7 @@ namespace BillogramsTest
 		[TestMethod]
 		public void GetBillogramAsync_Test()
 		{
-			var billogramUtility = new BillogramUtility(_clientSecretUser, _clientSecretKey);
-			Billograms.Net.Model.Billogram.Billogram result = billogramUtility.GetBillogramAsync(BillogramId).Result;
+			BillogramStructure result = _billogramUtility.GetBillogramAsync(BillogramId).Result;
 			Console.WriteLine(result.ID);
 		}
 
@@ -42,8 +43,7 @@ namespace BillogramsTest
 		[TestMethod]
 		public void GetBillogramsByState_Test()
 		{
-			var billogramUtility = new BillogramUtility(_clientSecretUser, _clientSecretKey);
-			List<Billograms.Net.Model.Billogram.Billogram> result = billogramUtility.GetBillogramsByState("unattested").Result;
+			List<BillogramStructure> result = _billogramUtility.GetBillogramsByState("unattested").Result;
 			Console.WriteLine(result.Count);
 		}
 
@@ -51,79 +51,102 @@ namespace BillogramsTest
 		[TestMethod]
 		public void GetBillogramsByCustomerNo_Test()
 		{
-			var billogramUtility = new BillogramUtility(_clientSecretUser, _clientSecretKey);
-			List<Billograms.Net.Model.Billogram.Billogram> result = billogramUtility.GetBillogramListByCustomerNo(CustomerNo).Result;
+			List<BillogramStructure> result = _billogramUtility.GetBillogramListByCustomerNo(CustomerNo).Result;
 
 			Console.WriteLine(result.Count);
 		}
-
-
-		//----------------------------------Finish tested the functions below----------------------
-
-
 
 
 
 		[TestMethod]
 		public void CreateBillogram_Test()
 		{
-			var billogramUtility = new BillogramUtility(_clientSecretUser, _clientSecretKey);
+			BillogramHelper billogramHelper = new BillogramHelper()
+			{
+				CustomerStructure = new CustomerStructure()
+				{
+					CustomerNo = CustomerNo
+				},
+				Subscriptions = new BillogramItems()
+				{
+					ItemNo = SubscriptionId.ToString(),
+					Discount = 0,
+					Count = 2
+				}
+			};
 
-			var result = billogramUtility.CreateBillogram(CustomerNo, SubscriptionId).Result;
-			//Assert.IsNotNull(result.ID);
+			var result = _billogramUtility.CreateBillogram(billogramHelper).Result;
+
+			Console.WriteLine(result.ID);
+			Assert.IsNotNull(result.ID);
 
 		}
+
+
+		[TestMethod]
+		public async Task SendBillogram_toEmail()
+		{
+			await _billogramUtility.SendBillogram("PAsE6WY");
+
+		}
+
+
+		[TestMethod]
+		public void GetCustomer_test()
+		{
+			var cusData = _billogramUtility.GetCustomerInfo(1).Result;
+			Assert.IsNotNull(cusData);
+		}
+
 
 
 		[TestMethod]
 		public void CreateCustomer_Test()
 		{
-			var model = new CustomerViewModel()
+			var model = new CustomerStructure()
 			{
-				CustomerNo = 810,
+				CustomerNo = 813,
 				CustomerName = "Wftest",
-				CompanyType = "individual",
+				CustomerCompanyType = "individual",
 				CustomerOrganizationNo = "",
 				CustomerVatNo = "",
 
-				CustomerContactName = "Wftest Customer",
-				CustomerContactEmail = "priyanka@worldfavor.com",
-				CustomerContactPhone = "0765707970",
 
-				CustomerPrimaryStreetAddress = "Regeringsgatan 65",
-				CustomerPrimaryZipCode = "16962",
-				CustomerPrimaryCity = "Stockholm",
-				CustomerPrimaryCountry = "bd",
-				CustomerPrimaryCareOf = "Wftest",
-				CustomerPrimaryUseCareOfAsAttention = "Wftest",
+				CustomerContact = new CustomerContact()
+				{
+					CustomerContactName = "Wftest Customer",
+					CustomerContactEmail = "priyanka@worldfavor.com",
+					CustomerContactPhone = "0765707970",
 
-				CustomerDeliveryName = "Wftest Customer",
-				CustomerDeliveryCareOf = "Wftest",
-				CustomerDeliveryZipCode = "16962",
-				CustomerDeliveryStreetAddress = "Regeringsgatan 65",
-				CustomerDeliveryCity = "Stockholm",
-				CustomerDeliveryCountry = "SE",
+				},
+				CustomerDelivery = new CustomerDelivery()
+				{
+					CustomerDeliveryName = "Wftest Customer",
+					CustomerDeliveryCareOf = "Wftest",
+					CustomerDeliveryZipCode = "16962",
+					CustomerDeliveryStreetAddress = "Regeringsgatan 65",
+					CustomerDeliveryCity = "Stockholm",
+					CustomerDeliveryCountry = "SE",
+
+				},
+				CustomerPrimary = new CustomerPrimary()
+				{
+					CustomerPrimaryStreetAddress = "Regeringsgatan 65",
+					CustomerPrimaryZipCode = "16962",
+					CustomerPrimaryCity = "Stockholm",
+					CustomerPrimaryCountry = "bd",
+					CustomerPrimaryCareOf = "Wftest",
+					CustomerPrimaryUseCareOfAsAttention = true,
+
+				}
 			};
-			var result = _billogramUtility.CreateCustomer(model).Result;
+			CustomerStructure result = _billogramUtility.CreateCustomer(model).Result;
 			Assert.IsNotNull(result.CustomerNo);
 
 		}
 
 
-
-		[TestMethod]
-		public void UpdateCustomer_Test()
-		{
-			//zipcode required if streeaddress
-			var model = new CustomerViewModel()
-			{
-				CustomerNo = 810,
-				CustomerContactName = "Wftest11",
-			};
-			var result = _billogramUtility.UpdateCustomerAsync(model).Result;
-			//	Assert.IsNotNull(result.CustomerNo);
-
-		}
+		//----------------------------------Finish tested the functions below----------------------
 
 
 		[TestMethod]
@@ -134,5 +157,25 @@ namespace BillogramsTest
 			var result = _billogramUtility.GetInvoicePdfFile(billogramId).Result;
 			//Assert.IsNotNull(result);
 		}
+
+
+		[TestMethod]
+		public void UpdateCustomer_Test()
+		{
+			//zipcode required if streeaddress
+			var model = new CustomerStructure()
+			{
+				CustomerNo = 1,
+				CustomerContact = new CustomerContact()
+				{
+					CustomerContactName = "Wftest144"
+				}
+			};
+			var result = _billogramUtility.UpdateCustomerAsync(model).Result;
+			//	Assert.IsNotNull(result.CustomerNo);
+
+		}
+
+
 	}
 }

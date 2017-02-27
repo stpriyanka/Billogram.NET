@@ -1,4 +1,4 @@
-namespace Billograms.Net.ViewModel
+namespace Billogram.Net.ViewModel
 {
 	public class CustomerViewModel
 	{

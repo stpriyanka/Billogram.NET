@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Billogram.Net.Model.BilloCustomer;
 using Newtonsoft.Json;
 
 
-namespace Billograms.Net.Model.Billogram
+namespace Billogram.Net.Model.BillogramHelperModel
 {
-	public class Billogram
+	public class BillogramStructure
 	{
 		[JsonProperty("id")]
 		public string ID { get; set; }
@@ -20,7 +21,7 @@ namespace Billograms.Net.Model.Billogram
 
 
 		[JsonProperty("customer")]
-		public Customer.Customer Customer { get; set; }
+		public CustomerStructure CustomerStructure { get; set; }
 
 
 		[JsonProperty("items")]

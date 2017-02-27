@@ -18,3 +18,23 @@ C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net.Test\bin\Debug\Bill
 C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Formatting.dll
 C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net.Test\bin\Debug\Billogram.Net.pdb
 C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Formatting.xml
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Billogram.Net.Test.dll.config
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Billogram.Net.Test.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Billogram.Net.Test.pdb
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Billogram.Net.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\JWT.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Newtonsoft.Json.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Extensions.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Primitives.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Formatting.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Billogram.Net.pdb
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Newtonsoft.Json.xml
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Extensions.xml
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Primitives.xml
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\bin\Debug\System.Net.Http.Formatting.xml
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\obj\Debug\Billogram.Net.Test.csproj.App.config
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\obj\Debug\Billogram.Net.Test.csprojResolveAssemblyReference.cache
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\obj\Debug\Billogram.Net.Test.dll
+C:\git_repo\Billogram .NET\Billogram.Net\Billogram.Net.Test\obj\Debug\Billogram.Net.Test.pdb

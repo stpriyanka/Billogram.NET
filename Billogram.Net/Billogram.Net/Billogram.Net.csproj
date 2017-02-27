@@ -65,16 +65,17 @@
   <ItemGroup>
     <Compile Include="Interface\IBillogram.cs" />
     <Compile Include="Interface\ICustomer.cs" />
-    <Compile Include="Model\Billogram\Billogram.cs" />
-    <Compile Include="Model\Billogram\BillogramAdditionalInformation.cs" />
-    <Compile Include="Model\Billogram\BillogramCallbacks.cs" />
-    <Compile Include="Model\Billogram\BillogramEvents.cs" />
-    <Compile Include="Model\Billogram\BillogramItems.cs" />
-    <Compile Include="Model\Customer\Customer.cs" />
-    <Compile Include="Model\Customer\CustomerContact.cs" />
-    <Compile Include="Model\Customer\CustomerDelivery.cs" />
-    <Compile Include="Model\Customer\CustomerPrimary.cs" />
+    <Compile Include="Model\BillogramHelperModel\BillogramStructure.cs" />
+    <Compile Include="Model\BillogramHelperModel\BillogramAdditionalInformation.cs" />
+    <Compile Include="Model\BillogramHelperModel\BillogramCallbacks.cs" />
+    <Compile Include="Model\BillogramHelperModel\BillogramEvents.cs" />
+    <Compile Include="Model\BillogramHelperModel\BillogramItems.cs" />
+    <Compile Include="Model\BilloCustomer\Customer.cs" />
+    <Compile Include="Model\BilloCustomer\CustomerContact.cs" />
+    <Compile Include="Model\BilloCustomer\CustomerDelivery.cs" />
+    <Compile Include="Model\BilloCustomer\CustomerPrimary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\BillogramHelper.cs" />
     <Compile Include="Utility\BillogramUtility.cs" />
     <Compile Include="ViewModel\CustomerViewModel.cs" />
   </ItemGroup>

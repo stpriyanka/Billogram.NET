@@ -6,9 +6,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Billograms.Net.Model.Billogram;
-using Billograms.Net.Model.Customer;
-using Billograms.Net.ViewModel;
+using Billogram.Net.Model.BilloCustomer;
+using Billogram.Net.Model.BillogramHelperModel;
+using Billogram.Net.ViewModel;
 using Newtonsoft.Json.Linq;
 
 namespace Billogram.Net.Utility
@@ -20,9 +20,9 @@ namespace Billogram.Net.Utility
 		private readonly HttpClient _client;
 		private readonly string _baseUrl;
 
-		private Billograms.Net.Model.Billogram.Billogram _billogram;
-		private Customer _customer;
+		private BillogramStructure _billogram;
 
+		private CustomerStructure _customer;
 		/// <summary>
 		/// Use this constructor if production environment should be run 
 		/// OR use another constructor if the environment should be passed by parameter
@@ -73,9 +73,8 @@ namespace Billogram.Net.Utility
 		/// </summary>
 		/// <param name="billogramId"></param>
 		/// <returns></returns>
-		public async Task<Billograms.Net.Model.Billogram.Billogram> GetBillogramAsync(string billogramId)
+		public async Task<BillogramStructure> GetBillogramAsync(string billogramId)
 		{
-			Exception catchedException = null;
 			try
 			{
 				HttpResponseMessage response = await _client.GetAsync(_baseUrl + "billogram/" + billogramId);
@@ -87,16 +86,13 @@ namespace Billogram.Net.Utility
 
 				JObject jObject = JObject.Parse(responseBody);
 				JToken billogramData = jObject["data"];
-				_billogram = billogramData.ToObject<Billograms.Net.Model.Billogram.Billogram>();
+				_billogram = billogramData.ToObject<BillogramStructure>();
 			}
 			catch (Exception e)
 			{
-				catchedException = e;
+				Exception catchedException = e;
 			}
-
-			if (catchedException == null)
-				return _billogram;
-			throw catchedException;
+			return _billogram;
 		}
 
 
@@ -106,9 +102,9 @@ namespace Billogram.Net.Utility
 		/// </summary>
 		/// <param name="state"></param>
 		/// <returns></returns>
-		public async Task<List<Billograms.Net.Model.Billogram.Billogram>> GetBillogramsByState(string state)
+		public async Task<List<BillogramStructure>> GetBillogramsByState(string state)
 		{
-			var billograms = new List<Billograms.Net.Model.Billogram.Billogram>();
+			var billograms = new List<BillogramStructure>();
 
 			var query = HttpUtility.ParseQueryString(string.Empty);
 			query["page"] = "1";
@@ -128,7 +124,7 @@ namespace Billogram.Net.Utility
 			{
 				JObject element = (JObject)jToken;
 
-				Billograms.Net.Model.Billogram.Billogram output = element.ToObject<Billograms.Net.Model.Billogram.Billogram>();
+				BillogramStructure output = element.ToObject<BillogramStructure>();
 				billograms.Add(output);
 			}
 
@@ -142,10 +138,10 @@ namespace Billogram.Net.Utility
 		/// </summary>
 		/// <param name="customerNo">The customer no.</param>
 		/// <returns>Task&lt;List&lt;Billogram&gt;&gt;.</returns>
-		public async Task<List<Billograms.Net.Model.Billogram.Billogram>> GetBillogramListByCustomerNo(int customerNo)
+		public async Task<List<BillogramStructure>> GetBillogramListByCustomerNo(int customerNo)
 		{
 			Exception catchedException = null;
-			var billograms = new List<Billograms.Net.Model.Billogram.Billogram>();
+			var billograms = new List<BillogramStructure>();
 
 			var query = HttpUtility.ParseQueryString(string.Empty);
 			query["page"] = "1";
@@ -166,7 +162,7 @@ namespace Billogram.Net.Utility
 				foreach (var jToken in jObject["data"])
 				{
 					JObject element = (JObject)jToken;
-					Billograms.Net.Model.Billogram.Billogram output = element.ToObject<Billograms.Net.Model.Billogram.Billogram>();
+					BillogramStructure output = element.ToObject<BillogramStructure>();
 					billograms.Add(output);
 				}
 			}
@@ -219,21 +215,24 @@ namespace Billogram.Net.Utility
 		/// <summary>
 		/// Create billogram
 		/// </summary>
-		/// <param name="customerNo"></param>
-		/// <param name="subscriptionId"></param>
-		/// <returns></returns>
-		public async Task<Billograms.Net.Model.Billogram.Billogram> CreateBillogram(int customerNo, int subscriptionId)
+		/// <param name="billogramHelper"></param>
+		/// <returns>BillogramStructure instance</returns>
+		public async Task<BillogramStructure> CreateBillogram(BillogramHelper billogramHelper)
 		{
 			Exception catchedException = null;
 			var data = new
 			{
 				customer = new
 				{
-					customer_no = customerNo
+					customer_no = billogramHelper.CustomerStructure.CustomerNo
 				},
 				items = new[]
 				{
-					 new { count = 1, discount = 0, item_no = subscriptionId }
+					 new {
+						 count = billogramHelper.Subscriptions.Count,
+						 discount = billogramHelper.Subscriptions.Discount,
+						 item_no = billogramHelper.Subscriptions.ItemNo
+					 }
 				}
 			};
 			try
@@ -245,9 +244,9 @@ namespace Billogram.Net.Utility
 				var responseBody = await response.Content.ReadAsStringAsync();
 
 				JObject jObject = JObject.Parse(responseBody);
-				IDictionary<string, JToken> billogramData = (JObject)jObject["data"];
+				JToken billogramData = jObject["data"];
 
-				//_billogram = new Billogram(billogramData);
+				_billogram = billogramData.ToObject<BillogramStructure>();
 			}
 			catch (Exception e)
 			{
@@ -268,24 +267,31 @@ namespace Billogram.Net.Utility
 		/// <returns>Task&lt;Billogram&gt;.</returns>
 		public async Task SendBillogram(string unattestedBillogramId)
 		{
-			var data = new
-			{
-				method = "Email"
-			};
+			BillogramStructure billogramInfo = await GetBillogramAsync(unattestedBillogramId);
 
-			var queryString = unattestedBillogramId + "/command/send/";
+			dynamic value = billogramInfo.State;
 
-			try
+			if (value == "Unattested")
 			{
-				HttpResponseMessage response = await _client.PostAsJsonAsync(_baseUrl + "billogram/" + queryString, data);
-				if (response.IsSuccessStatusCode)
+				var data = new
 				{
-					response.EnsureSuccessStatusCode();
+					method = "Email"
+				};
+
+				var queryString = unattestedBillogramId + "/command/send/";
+
+				try
+				{
+					HttpResponseMessage response = await _client.PostAsJsonAsync(_baseUrl + "billogram/" + queryString, data);
+					if (response.IsSuccessStatusCode)
+					{
+						response.EnsureSuccessStatusCode();
+					}
 				}
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("Unable to send billogram");
+				catch (Exception e)
+				{
+					Console.WriteLine("Unable to send billogram");
+				}
 			}
 		}
 
@@ -296,30 +302,20 @@ namespace Billogram.Net.Utility
 		/// </summary>
 		/// <param name="customerId"></param>
 		/// <returns></returns>
-		public async Task<Customer> GetCustomer(int customerId)
+		public async Task<CustomerStructure> GetCustomerInfo(int customerId)
 		{
-			Exception catchedException = null;
-			try
-			{
-				HttpResponseMessage response = await _client.GetAsync(_baseUrl + "customer/" + customerId);
+			HttpResponseMessage response = await _client.GetAsync(_baseUrl + "customer/" + customerId);
 
-				if (!response.IsSuccessStatusCode)
-					return _customer;
-				response.EnsureSuccessStatusCode();
-				string responseBody = await response.Content.ReadAsStringAsync();
-				JObject jObject = JObject.Parse(responseBody);
-				IDictionary<string, JToken> customerData = (JObject)jObject["data"];
-
-				//_customer = new Customer(customerData);
-			}
-			catch (Exception e)
-			{
-				catchedException = e;
-			}
-
-			if (catchedException == null)
+			if (!response.IsSuccessStatusCode)
 				return _customer;
-			throw catchedException;
+			response.EnsureSuccessStatusCode();
+			string responseBody = await response.Content.ReadAsStringAsync();
+			JObject jObject = JObject.Parse(responseBody);
+			JToken customerData = jObject["data"];
+
+			_customer = customerData.ToObject<CustomerStructure>();
+
+			return _customer;
 		}
 
 
@@ -329,36 +325,36 @@ namespace Billogram.Net.Utility
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		public async Task<Customer> CreateCustomer(CustomerViewModel model)
+		public async Task<CustomerStructure> CreateCustomer(CustomerStructure customer)
 		{
 			var data = new
 			{
-				customer_no = model.CustomerNo,
+				customer_no = customer.CustomerNo,
 
-				name = model.CustomerName ?? string.Empty,
-				company_type = model.CompanyType ?? "individual",
-				org_no = model.CustomerOrganizationNo ?? string.Empty,
+				name = customer.CustomerName ?? string.Empty,
+				company_type = customer.CustomerCompanyType ?? "individual",
+				org_no = customer.CustomerOrganizationNo ?? string.Empty,
 				contact = new
 				{
-					name = model.CustomerContactName ?? string.Empty,
-					email = model.CustomerContactEmail ?? string.Empty,
-					phone = model.CustomerContactPhone ?? string.Empty
+					name = customer.CustomerContact.CustomerContactName ?? string.Empty,
+					email = customer.CustomerContact.CustomerContactEmail ?? string.Empty,
+					phone = customer.CustomerContact.CustomerContactPhone ?? string.Empty
 				},
 				address = new
 				{
-					street_address = model.CustomerPrimaryStreetAddress ?? string.Empty,
-					zipcode = model.CustomerPrimaryZipCode ?? model.CustomerDeliveryZipCode,
-					city = model.CustomerPrimaryCity ?? string.Empty,
-					country = model.CustomerPrimaryCountry ?? string.Empty
+					street_address = customer.CustomerPrimary.CustomerPrimaryStreetAddress ?? string.Empty,
+					zipcode = customer.CustomerPrimary.CustomerPrimaryZipCode ?? customer.CustomerDelivery.CustomerDeliveryZipCode,
+					city = customer.CustomerPrimary.CustomerPrimaryCity ?? string.Empty,
+					country = customer.CustomerPrimary.CustomerPrimaryCountry ?? string.Empty
 				},
 				delivery_address = new
 				{
-					name = model.CustomerDeliveryName ?? string.Empty,
-					street_address = model.CustomerDeliveryStreetAddress ?? string.Empty,
-					careof = model.CustomerDeliveryCareOf ?? string.Empty,
-					zipcode = model.CustomerDeliveryZipCode ?? model.CustomerPrimaryZipCode,
-					city = model.CustomerDeliveryCity ?? string.Empty,
-					country = model.CustomerDeliveryCountry ?? string.Empty
+					name = customer.CustomerDelivery.CustomerDeliveryName ?? string.Empty,
+					street_address = customer.CustomerDelivery.CustomerDeliveryStreetAddress ?? string.Empty,
+					careof = customer.CustomerDelivery.CustomerDeliveryCareOf ?? string.Empty,
+					zipcode = customer.CustomerDelivery.CustomerDeliveryZipCode ?? customer.CustomerPrimary.CustomerPrimaryZipCode,
+					city = customer.CustomerDelivery.CustomerDeliveryCity ?? string.Empty,
+					country = customer.CustomerDelivery.CustomerDeliveryCountry ?? string.Empty
 				}
 			};
 
@@ -367,87 +363,80 @@ namespace Billogram.Net.Utility
 			var responseBody = await response.Content.ReadAsStringAsync();
 
 			JObject json = JObject.Parse(responseBody);
-			IDictionary<string, JToken> customerData = (JObject)json["data"];
-
-			//_customer = new Customer(customerData);
+			JToken customerData = json["data"];
+			_customer = customerData.ToObject<CustomerStructure>();
 			return _customer;
 		}
-
 
 
 		/// <summary>
 		/// Update existing customer information
 		/// </summary>
-		/// <param name="model"></param>
+		/// <param name="customer"></param>
 		/// <returns></returns>
-		public async Task<Customer> UpdateCustomerAsync(CustomerViewModel model)
+		public async Task<CustomerStructure> UpdateCustomerAsync(CustomerStructure customer)
 		{
+			//try
+			//{
+			var data = new
+			{
+				customer_no = customer.CustomerNo,
+
+				name = customer.CustomerName ?? string.Empty,
+				company_type = customer.CustomerCompanyType ?? "individual",
+				org_no = customer.CustomerOrganizationNo ?? string.Empty,
+				//contact = new
+				//{
+				//	name = customer.CustomerContact.CustomerContactName ?? string.Empty,
+				//	email = customer.CustomerContact.CustomerContactEmail ?? string.Empty,
+				//	phone = customer.CustomerContact.CustomerContactPhone ?? string.Empty
+				//},
+				//address = new
+				//{
+				//	street_address = customer.CustomerPrimary.CustomerPrimaryStreetAddress ?? string.Empty,
+				//	zipcode = customer.CustomerPrimary.CustomerPrimaryZipCode ?? customer.CustomerDelivery.CustomerDeliveryZipCode,
+				//	city = customer.CustomerPrimary.CustomerPrimaryCity ?? string.Empty,
+				//	country = customer.CustomerPrimary.CustomerPrimaryCountry ?? string.Empty
+				//},
+				//delivery_address = new
+				//{
+				//	name = customer.CustomerDelivery.CustomerDeliveryName ?? string.Empty,
+				//	street_address = customer.CustomerDelivery.CustomerDeliveryStreetAddress ?? string.Empty,
+				//	careof = customer.CustomerDelivery.CustomerDeliveryCareOf ?? string.Empty,
+				//	zipcode = customer.CustomerDelivery.CustomerDeliveryZipCode ?? customer.CustomerPrimary.CustomerPrimaryZipCode,
+				//	city = customer.CustomerDelivery.CustomerDeliveryCity ?? string.Empty,
+				//	country = customer.CustomerDelivery.CustomerDeliveryCountry ?? string.Empty
+				//}
+			};
+
+			HttpResponseMessage response = await _client.PutAsJsonAsync(_baseUrl + "customer/" + customer.CustomerNo, data);
+
 			try
 			{
-				var data = new
+				if (response.IsSuccessStatusCode)
 				{
-					customer_no = model.CustomerNo,
+					response.EnsureSuccessStatusCode();
 
-					company_type = model.CompanyType ?? "individual",
-					org_no = model.CustomerOrganizationNo ?? string.Empty,
-					vat_no = model.CustomerVatNo ?? string.Empty,
-					contact = new
-					{
-						name = model.CustomerContactName ?? string.Empty,
-						email = model.CustomerContactEmail ?? string.Empty,
-						phone = model.CustomerContactPhone ?? string.Empty
-					},
-
-					address = new
-					{
-						street_address = model.CustomerPrimaryStreetAddress ?? string.Empty,
-						careof = model.CustomerPrimaryCareOf ?? string.Empty,
-						use_careof_as_attention = model.CustomerPrimaryUseCareOfAsAttention ?? string.Empty,
-						zipcode = model.CustomerPrimaryZipCode ?? model.CustomerDeliveryZipCode,
-						city = model.CustomerPrimaryCity ?? string.Empty,
-						country = model.CustomerPrimaryCountry ?? "SE",
-					},
-
-					delivery_address = new
-					{
-						name = model.CustomerDeliveryName ?? string.Empty,
-						street_address = model.CustomerDeliveryStreetAddress ?? string.Empty,
-						careof = model.CustomerDeliveryCareOf ?? string.Empty,
-						zipcode = model.CustomerDeliveryZipCode ?? model.CustomerPrimaryZipCode,
-						city = model.CustomerDeliveryCity ?? string.Empty,
-						country = model.CustomerDeliveryCountry ?? "SE"
-					}
-				};
-
-				HttpResponseMessage response = await _client.PutAsJsonAsync(_baseUrl + "customer/" + model.CustomerNo, data);
-
-				try
-				{
-					if (response.IsSuccessStatusCode)
-					{
-						response.EnsureSuccessStatusCode();
-
-						var responseBody = await response.Content.ReadAsStringAsync();
-						JObject jObject = JObject.Parse(responseBody);
-
-						IDictionary<string, JToken> customerData = (JObject)jObject["data"];
-						//	_customer = new Customer(customerData);
-					}
-					else
-					{
-						Console.WriteLine("Unable to update data");
-					}
+					var responseBody = await response.Content.ReadAsStringAsync();
+					JObject jObject = JObject.Parse(responseBody);
+					JToken customerData = jObject["data"];
+					_customer = customerData.ToObject<CustomerStructure>();
 				}
-				catch (Exception e)
+				else
 				{
-					Console.WriteLine("Customer info update error message " + e.Message);
+					Console.WriteLine("Unable to update data");
 				}
-
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				Console.WriteLine("Zipcode required if street_address is specified");
+				Console.WriteLine("Customer info update error message " + e.Message);
 			}
+
+			//}
+			//catch (Exception e)
+			//{
+			//	Console.WriteLine("Zipcode required if street_address is specified");
+			//}
 			return _customer;
 		}
 	}

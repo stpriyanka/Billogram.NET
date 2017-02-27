@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Billograms.Net.Model.Customer
+namespace Billogram.Net.Model.BilloCustomer
 {
 	public class CustomerDelivery
 	{
