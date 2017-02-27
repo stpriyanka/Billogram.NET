@@ -1,0 +1,15 @@
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\obj\Debug\Billogram.Net.csproj.App.config
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\Billogram.Net.dll.config
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\Billogram.Net.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\Billogram.Net.pdb
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\JWT.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\Newtonsoft.Json.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\System.Net.Http.Extensions.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\System.Net.Http.Formatting.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\System.Net.Http.Primitives.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\Newtonsoft.Json.xml
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\System.Net.Http.Extensions.xml
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\System.Net.Http.Formatting.xml
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\bin\Debug\System.Net.Http.Primitives.xml
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\obj\Debug\Billogram.Net.dll
+C:\git_repo\billogram c# wrapper\Billogram.Net\Billogram.Net\obj\Debug\Billogram.Net.pdb
