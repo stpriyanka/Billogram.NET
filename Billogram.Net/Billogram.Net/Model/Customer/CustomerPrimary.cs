@@ -1,9 +1,11 @@
+using Billogram.Net.Utility;
 using Newtonsoft.Json;
 
-namespace Billogram.Net.Model.BilloCustomer
+namespace Billogram.Net.Model.Customer
 {
 	public class CustomerPrimary
 	{
+		[Check(CheckLength = 1)]
 		[JsonProperty("street_address")]
 		public string CustomerPrimaryStreetAddress { get; set; }
 
@@ -16,16 +18,12 @@ namespace Billogram.Net.Model.BilloCustomer
 		public bool CustomerPrimaryUseCareOfAsAttention { get; set; }
 
 
-		[JsonProperty("customerPrimaryZipCode")]
+		[JsonProperty("zipcode")]
 		public string CustomerPrimaryZipCode { get; set; }
 
 
-		[JsonProperty("zipcode")]
-		public string CustomerPrimaryCity { get; set; }
-
-
 		[JsonProperty("city")]
-		public string CustomerPrimaryContactPhone { get; set; }
+		public string CustomerPrimaryCity { get; set; }
 
 
 		[JsonProperty("country")]

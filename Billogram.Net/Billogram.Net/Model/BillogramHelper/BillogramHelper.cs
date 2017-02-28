@@ -1,8 +1,7 @@
-﻿using Billogram.Net.Model.BilloCustomer;
-using Billogram.Net.Model.BillogramHelperModel;
+﻿using Billogram.Net.Model.Customer;
 using Newtonsoft.Json;
 
-namespace Billogram.Net.Utility
+namespace Billogram.Net.Model.BillogramHelper
 {
 	public class BillogramHelper
 	{

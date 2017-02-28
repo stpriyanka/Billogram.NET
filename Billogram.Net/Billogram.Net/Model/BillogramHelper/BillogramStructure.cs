@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Billogram.Net.Model.BilloCustomer;
+using Billogram.Net.Model.Customer;
 using Newtonsoft.Json;
 
-
-namespace Billogram.Net.Model.BillogramHelperModel
+namespace Billogram.Net.Model.BillogramHelper
 {
 	public class BillogramStructure
 	{

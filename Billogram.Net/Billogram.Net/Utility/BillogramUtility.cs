@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Billogram.Net.Model.BilloCustomer;
-using Billogram.Net.Model.BillogramHelperModel;
+using Billogram.Net.Model.BillogramHelper;
+using Billogram.Net.Model.Customer;
 using Billogram.Net.ViewModel;
 using Newtonsoft.Json.Linq;
 
@@ -376,37 +377,37 @@ namespace Billogram.Net.Utility
 		/// <returns></returns>
 		public async Task<CustomerStructure> UpdateCustomerAsync(CustomerStructure customer)
 		{
-			//try
-			//{
+			CheckFirst(customer);
+
 			var data = new
 			{
-				customer_no = customer.CustomerNo,
 
+				//customer_no = customer.CustomerNo,
 				name = customer.CustomerName ?? string.Empty,
 				company_type = customer.CustomerCompanyType ?? "individual",
 				org_no = customer.CustomerOrganizationNo ?? string.Empty,
-				//contact = new
-				//{
-				//	name = customer.CustomerContact.CustomerContactName ?? string.Empty,
-				//	email = customer.CustomerContact.CustomerContactEmail ?? string.Empty,
-				//	phone = customer.CustomerContact.CustomerContactPhone ?? string.Empty
-				//},
-				//address = new
-				//{
-				//	street_address = customer.CustomerPrimary.CustomerPrimaryStreetAddress ?? string.Empty,
-				//	zipcode = customer.CustomerPrimary.CustomerPrimaryZipCode ?? customer.CustomerDelivery.CustomerDeliveryZipCode,
-				//	city = customer.CustomerPrimary.CustomerPrimaryCity ?? string.Empty,
-				//	country = customer.CustomerPrimary.CustomerPrimaryCountry ?? string.Empty
-				//},
-				//delivery_address = new
-				//{
-				//	name = customer.CustomerDelivery.CustomerDeliveryName ?? string.Empty,
-				//	street_address = customer.CustomerDelivery.CustomerDeliveryStreetAddress ?? string.Empty,
-				//	careof = customer.CustomerDelivery.CustomerDeliveryCareOf ?? string.Empty,
-				//	zipcode = customer.CustomerDelivery.CustomerDeliveryZipCode ?? customer.CustomerPrimary.CustomerPrimaryZipCode,
-				//	city = customer.CustomerDelivery.CustomerDeliveryCity ?? string.Empty,
-				//	country = customer.CustomerDelivery.CustomerDeliveryCountry ?? string.Empty
-				//}
+				contact = new
+				{
+					name = customer.CustomerContact?.CustomerContactName ?? string.Empty,
+					email = customer.CustomerContact?.CustomerContactEmail ?? string.Empty,
+					phone = customer.CustomerContact?.CustomerContactPhone ?? string.Empty
+				},
+				address = new
+				{
+					street_address = customer.CustomerPrimary?.CustomerPrimaryStreetAddress ?? string.Empty,
+					zipcode = customer.CustomerPrimary?.CustomerPrimaryZipCode ?? string.Empty,
+					city = customer.CustomerPrimary?.CustomerPrimaryCity ?? string.Empty,
+					country = customer.CustomerPrimary?.CustomerPrimaryCountry ?? string.Empty
+				},
+				delivery_address = new
+				{
+					name = customer.CustomerDelivery?.CustomerDeliveryName ?? string.Empty,
+					street_address = customer.CustomerDelivery?.CustomerDeliveryStreetAddress ?? string.Empty,
+					careof = customer.CustomerDelivery?.CustomerDeliveryCareOf ?? string.Empty,
+					zipcode = customer.CustomerDelivery?.CustomerDeliveryZipCode ?? string.Empty,
+					city = customer.CustomerDelivery?.CustomerDeliveryCity ?? string.Empty,
+					country = customer.CustomerDelivery?.CustomerDeliveryCountry ?? string.Empty
+				}
 			};
 
 			HttpResponseMessage response = await _client.PutAsJsonAsync(_baseUrl + "customer/" + customer.CustomerNo, data);
@@ -424,20 +425,67 @@ namespace Billogram.Net.Utility
 				}
 				else
 				{
-					Console.WriteLine("Unable to update data");
+					Console.WriteLine("Failed to update data");
 				}
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine("Customer info update error message " + e.Message);
 			}
-
-			//}
-			//catch (Exception e)
-			//{
-			//	Console.WriteLine("Zipcode required if street_address is specified");
-			//}
 			return _customer;
 		}
+
+		//TODO: optimize code use attribute and reduce nesting
+		private static void CheckFirst(CustomerStructure obj)
+		{
+			Type objtype = obj.GetType();
+
+			foreach (PropertyInfo p in objtype.GetProperties())
+			{
+				Type type;
+				if (p.Name == "CustomerPrimary")
+				{
+					type = obj.CustomerPrimary?.GetType();
+
+					if (type != null)
+					{
+						if (obj.CustomerPrimary?.CustomerPrimaryStreetAddress?.Length < 1) continue; //c.CheckLength
+						foreach (PropertyInfo prop in type.GetProperties().Where(prop => prop.Name == "CustomerPrimaryStreetAddress"))
+						{
+							if (obj.CustomerPrimary.CustomerPrimaryZipCode == null || obj.CustomerPrimary.CustomerPrimaryCity == null)
+							{
+								throw new Exception(" Zip code and primary city is required if primary street address is specified ");
+							}
+						}
+					}
+				}
+				if (p.Name == "CustomerDelivery")
+				{
+					type = obj.CustomerDelivery?.GetType();
+
+					if (type == null) continue;
+					if (obj.CustomerDelivery?.CustomerDeliveryStreetAddress?.Length < 1) continue;
+					foreach (PropertyInfo prop in type.GetProperties().Where(prop => prop.Name == "CustomerDeliveryStreetAddress"))
+					{
+						if (obj.CustomerDelivery.CustomerDeliveryCity == null || obj.CustomerDelivery.CustomerDeliveryZipCode == null)
+						{
+							throw new Exception(" Zip code and delivery city is required if delivery street address is specified ");
+						}
+					}
+				}
+			}
+		}
 	}
+
+
+
+
+
+	[AttributeUsage(AttributeTargets.Property)]
+	public class Check : Attribute
+	{
+		public int CheckLength { get; set; }
+	}
+
+
 }

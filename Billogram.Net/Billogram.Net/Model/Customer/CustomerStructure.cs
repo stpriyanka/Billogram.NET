@@ -1,14 +1,15 @@
 using System;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
-namespace Billogram.Net.Model.BilloCustomer
+namespace Billogram.Net.Model.Customer
 {
 	public class CustomerStructure
 	{
 		[JsonProperty("customer_no")]
 		public int CustomerNo { get; set; }
 
-
+		[Required]
 		[JsonProperty("name")]
 		public string CustomerName { get; set; }
 

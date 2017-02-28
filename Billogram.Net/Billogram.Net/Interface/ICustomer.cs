@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace Billograms.Net.Interface
+namespace Billogram.Net.Interface
 {
 	public interface ICustomer
 	{

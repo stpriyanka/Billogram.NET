@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Threading.Tasks;
-using Billogram.Net.Model.BilloCustomer;
-using Billogram.Net.Model.BillogramHelperModel;
+using Billogram.Net.Model.BillogramHelper;
+using Billogram.Net.Model.Customer;
 using Billogram.Net.Utility;
 using Billogram.Net.ViewModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -162,20 +163,21 @@ namespace Billogram.Net.Test
 		[TestMethod]
 		public void UpdateCustomer_Test()
 		{
+			var cusInfo = _billogramUtility.GetCustomerInfo(1).Result;
+
 			//zipcode required if streeaddress
-			var model = new CustomerStructure()
+			cusInfo.CustomerContact = new CustomerContact()
 			{
-				CustomerNo = 1,
-				CustomerContact = new CustomerContact()
-				{
-					CustomerContactName = "Wftest144"
-				}
-			};
-			var result = _billogramUtility.UpdateCustomerAsync(model).Result;
-			//	Assert.IsNotNull(result.CustomerNo);
+				CustomerContactName = "Wftes"
+			}
+			
+			;
+
+			CustomerStructure result = _billogramUtility.UpdateCustomerAsync(cusInfo).Result;
+
+
+			Assert.AreEqual(result.CustomerContact.CustomerContactName,cusInfo.CustomerContact.CustomerContactName);
 
 		}
-
-
 	}
 }

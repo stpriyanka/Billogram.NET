@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Billogram.Net.Model.BilloCustomer
+namespace Billogram.Net.Model.Customer
 {
 	public class CustomerContact
 	{

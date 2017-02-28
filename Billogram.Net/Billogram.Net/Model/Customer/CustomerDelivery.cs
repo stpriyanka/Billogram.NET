@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Billogram.Net.Model.BilloCustomer
+namespace Billogram.Net.Model.Customer
 {
 	public class CustomerDelivery
 	{
@@ -14,7 +14,6 @@ namespace Billogram.Net.Model.BilloCustomer
 
 		[JsonProperty("careof")]
 		public string CustomerDeliveryCareOf { get; set; }
-
 
 		[JsonProperty("zipcode")]
 		public string CustomerDeliveryZipCode { get; set; }
