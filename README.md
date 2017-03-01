@@ -24,6 +24,7 @@ To start with configure the client in you constructor.
 ```
 
 add client Id and secrect key in your App.Config blocked with <appsetting>.
+#####NOTE: For sandbox environment use the other constructor to instantiate and pass the url as parameter
 
 By default the url is set to production environment .But incase you want to pass the base url (might be production/ sandbox environment) to the constructor then use the other contructor that takes the base url as parameter.
 
@@ -59,8 +60,6 @@ However , 8 endpoints have been implemented here.
      List<Billogram> output = utility.GetBillogramListByCustomerNo(CustomerNo).Result;
      .........
 ```
-#####NOTE: For sandbox environment use the other constructor to instantiate and pass the url as parameter
-
 For more details [click here](https://billogram.com/api/documentation#easy_to_get_started)
 
 
