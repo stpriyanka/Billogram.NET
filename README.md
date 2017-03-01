@@ -7,8 +7,11 @@ A simple .net wrapper for Billogram API.
 To install Billogram, run the following command in the Package Manager Console
 
 ```
-   PM> Install-Package Billogram
+   PM> Install-Package Billogram 
+               OR
+   PM> Install-Package BillogramPackage
 ```
+For more details about the package should be found [here](https://www.nuget.org/packages/BillogramPackage/). 
 
 ## Usage
 
@@ -48,7 +51,7 @@ To run this  library locally install these packages
 
 However , 8 endpoints have been implemented here.  
 
-#### To refer any endpoint all is needed is to instantiate 'BillogramUtility.cs' class and continue the one is needed. (For ex. CreateBillogram, SendBillogram, GetCustomerInfo, GetBillogramsByState, ........) 
+##### To refer any endpoint all is needed is to instantiate 'BillogramUtility.cs' class and continue the one is needed. (For ex. CreateBillogram, SendBillogram, GetCustomerInfo, GetBillogramsByState, ........) 
 
 ```c#
 
