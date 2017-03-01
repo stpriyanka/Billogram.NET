@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Billogram.Net.Interface.IBillogram;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.BillogramHelper
 {
-	public class BillogramItems
+	public class BillogramItems : IBillogramItems
 	{
 		[JsonProperty("item_no")]
 		public string ItemNo { get; set; }

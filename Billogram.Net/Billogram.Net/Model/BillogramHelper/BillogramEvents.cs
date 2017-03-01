@@ -1,9 +1,10 @@
 using System;
+using Billogram.Net.Interface.IBillogram;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.BillogramHelper
 {
-	public class BillogramEvents
+	public class BillogramEvents : IBillogramEvents
 	{
 		[JsonProperty("created_at")]
 		public DateTime? CreatedAt { get; set; }

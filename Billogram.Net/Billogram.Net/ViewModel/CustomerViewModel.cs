@@ -1,5 +1,8 @@
+using System;
+
 namespace Billogram.Net.ViewModel
 {
+	[Obsolete("Use instead 'CustomerStructure.cs'", true)]
 	public class CustomerViewModel
 	{
 		//Default:automatic sequential numbers

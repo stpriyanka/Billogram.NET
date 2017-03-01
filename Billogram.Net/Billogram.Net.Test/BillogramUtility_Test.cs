@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Threading.Tasks;
 using Billogram.Net.Model.BillogramHelper;
 using Billogram.Net.Model.Customer;
 using Billogram.Net.Utility;
-using Billogram.Net.ViewModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Billogram.Net.Test
@@ -147,7 +145,6 @@ namespace Billogram.Net.Test
 		}
 
 
-		//----------------------------------Finish tested the functions below----------------------
 
 
 		[TestMethod]

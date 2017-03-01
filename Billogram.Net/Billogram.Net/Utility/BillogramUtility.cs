@@ -9,12 +9,11 @@ using System.Threading.Tasks;
 using System.Web;
 using Billogram.Net.Model.BillogramHelper;
 using Billogram.Net.Model.Customer;
-using Billogram.Net.ViewModel;
 using Newtonsoft.Json.Linq;
 
 namespace Billogram.Net.Utility
 {
-	public class BillogramUtility
+	public class BillogramUtility : IBillogramUtility
 	{
 		public string ClientSecretUser;
 		public string ClientSecretKey;
@@ -22,8 +21,9 @@ namespace Billogram.Net.Utility
 		private readonly string _baseUrl;
 
 		private BillogramStructure _billogram;
-
 		private CustomerStructure _customer;
+
+
 		/// <summary>
 		/// Use this constructor if production environment should be run 
 		/// OR use another constructor if the environment should be passed by parameter
@@ -91,7 +91,7 @@ namespace Billogram.Net.Utility
 			}
 			catch (Exception e)
 			{
-				Exception catchedException = e;
+				throw new Exception("Unable to retrieve data." + e);
 			}
 			return _billogram;
 		}
@@ -105,8 +105,6 @@ namespace Billogram.Net.Utility
 		/// <returns></returns>
 		public async Task<List<BillogramStructure>> GetBillogramsByState(string state)
 		{
-			var billograms = new List<BillogramStructure>();
-
 			var query = HttpUtility.ParseQueryString(string.Empty);
 			query["page"] = "1";
 			query["page_size"] = "50";
@@ -119,15 +117,9 @@ namespace Billogram.Net.Utility
 			response.EnsureSuccessStatusCode();
 			var responseBody = await response.Content.ReadAsStringAsync();
 
-			var obj = JObject.Parse(responseBody);
-
-			foreach (var jToken in obj["data"])
-			{
-				JObject element = (JObject)jToken;
-
-				BillogramStructure output = element.ToObject<BillogramStructure>();
-				billograms.Add(output);
-			}
+			JObject jObject = JObject.Parse(responseBody);
+			JArray jArray = (JArray)jObject["data"];
+			var billograms = jArray.ToObject<List<BillogramStructure>>();
 
 			return billograms;
 		}
@@ -159,13 +151,8 @@ namespace Billogram.Net.Utility
 
 				var responseBody = await response.Content.ReadAsStringAsync();
 				JObject jObject = JObject.Parse(responseBody);
-
-				foreach (var jToken in jObject["data"])
-				{
-					JObject element = (JObject)jToken;
-					BillogramStructure output = element.ToObject<BillogramStructure>();
-					billograms.Add(output);
-				}
+				JArray jArray = (JArray)jObject["data"];
+				billograms = jArray.ToObject<List<BillogramStructure>>(); // test pending
 			}
 			catch (Exception e)
 			{
@@ -186,29 +173,20 @@ namespace Billogram.Net.Utility
 		/// <returns>Task&lt;dynamic&gt;.</returns>
 		public async Task<dynamic> GetInvoicePdfFile(string billogramId)
 		{
+			dynamic contentValue = null;
+
 			HttpResponseMessage response = await _client.GetAsync(_baseUrl + "billogram/" + billogramId + ".pdf");
 
-			dynamic value = null;
 			if (response.IsSuccessStatusCode)
 			{
 				response.EnsureSuccessStatusCode();
 
 				var responseBody = await response.Content.ReadAsStringAsync();
 				JObject jo = JObject.Parse(responseBody);
+				contentValue = jo["data"]["content"];
 
-				IDictionary<string, JToken> jObject = (JObject)jo["data"];
-
-				Dictionary<string, dynamic> dictionary = jObject.ToDictionary(pair => pair.Key, pair => (dynamic)pair.Value);
-
-				bool getValue = dictionary.TryGetValue("content", out value);
-				if (getValue == false)
-					return null;
 			}
-			else
-			{
-				Console.WriteLine("Unable to load invoice pdf");
-			}
-			return value;
+			return contentValue;
 		}
 
 
@@ -246,7 +224,6 @@ namespace Billogram.Net.Utility
 
 				JObject jObject = JObject.Parse(responseBody);
 				JToken billogramData = jObject["data"];
-
 				_billogram = billogramData.ToObject<BillogramStructure>();
 			}
 			catch (Exception e)
@@ -311,9 +288,9 @@ namespace Billogram.Net.Utility
 				return _customer;
 			response.EnsureSuccessStatusCode();
 			string responseBody = await response.Content.ReadAsStringAsync();
+
 			JObject jObject = JObject.Parse(responseBody);
 			JToken customerData = jObject["data"];
-
 			_customer = customerData.ToObject<CustomerStructure>();
 
 			return _customer;
@@ -324,7 +301,7 @@ namespace Billogram.Net.Utility
 		/// <summary>
 		/// Create a customer for specific company
 		/// </summary>
-		/// <param name="model"></param>
+		/// <param name="customer"></param>
 		/// <returns></returns>
 		public async Task<CustomerStructure> CreateCustomer(CustomerStructure customer)
 		{
@@ -344,7 +321,7 @@ namespace Billogram.Net.Utility
 				address = new
 				{
 					street_address = customer.CustomerPrimary.CustomerPrimaryStreetAddress ?? string.Empty,
-					zipcode = customer.CustomerPrimary.CustomerPrimaryZipCode ?? customer.CustomerDelivery.CustomerDeliveryZipCode,
+					zipcode = customer.CustomerPrimary.CustomerPrimaryZipCode ?? string.Empty,
 					city = customer.CustomerPrimary.CustomerPrimaryCity ?? string.Empty,
 					country = customer.CustomerPrimary.CustomerPrimaryCountry ?? string.Empty
 				},
@@ -353,7 +330,7 @@ namespace Billogram.Net.Utility
 					name = customer.CustomerDelivery.CustomerDeliveryName ?? string.Empty,
 					street_address = customer.CustomerDelivery.CustomerDeliveryStreetAddress ?? string.Empty,
 					careof = customer.CustomerDelivery.CustomerDeliveryCareOf ?? string.Empty,
-					zipcode = customer.CustomerDelivery.CustomerDeliveryZipCode ?? customer.CustomerPrimary.CustomerPrimaryZipCode,
+					zipcode = customer.CustomerDelivery.CustomerDeliveryZipCode ?? string.Empty,
 					city = customer.CustomerDelivery.CustomerDeliveryCity ?? string.Empty,
 					country = customer.CustomerDelivery.CustomerDeliveryCountry ?? string.Empty
 				}
@@ -381,8 +358,6 @@ namespace Billogram.Net.Utility
 
 			var data = new
 			{
-
-				//customer_no = customer.CustomerNo,
 				name = customer.CustomerName ?? string.Empty,
 				company_type = customer.CustomerCompanyType ?? "individual",
 				org_no = customer.CustomerOrganizationNo ?? string.Empty,
@@ -435,7 +410,12 @@ namespace Billogram.Net.Utility
 			return _customer;
 		}
 
-		//TODO: optimize code use attribute and reduce nesting
+
+
+		/// <summary>
+		/// Check some specific fields if those are required in current condition
+		/// </summary>
+		/// <param name="obj"></param>
 		private static void CheckFirst(CustomerStructure obj)
 		{
 			Type objtype = obj.GetType();
@@ -478,14 +458,9 @@ namespace Billogram.Net.Utility
 	}
 
 
-
-
-
 	[AttributeUsage(AttributeTargets.Property)]
 	public class Check : Attribute
 	{
 		public int CheckLength { get; set; }
 	}
-
-
 }

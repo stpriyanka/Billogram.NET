@@ -1,10 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Billogram.Net.Interface.IBillogram;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.BillogramHelper
 {
-	public class BillogramAdditionalInformation
+	public class BillogramAdditionalInformation : IBillogramAdditionalInformation
 	{
 		[StringLength(30, ErrorMessage = "* 30 character in length.")]
 		[JsonProperty("order_no")]

@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Billogram.Net.Interface.IBillogram;
 using Billogram.Net.Model.Customer;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.BillogramHelper
 {
-	public class BillogramStructure
+	/// <summary>
+	///In the Billogram system, invoices are represented as sub-objects of billogram objects, and invoices are immutable. 
+	/// Changes to the billogram object will rather generate new invoices. 
+	/// </summary>
+	public class BillogramStructure : IBillogramStructure
 	{
 		[JsonProperty("id")]
 		public string ID { get; set; }

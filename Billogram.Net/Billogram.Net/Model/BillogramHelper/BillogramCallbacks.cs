@@ -1,8 +1,9 @@
+using Billogram.Net.Interface.IBillogram;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.BillogramHelper
 {
-	public class BillogramCallbacks
+	public class BillogramCallbacks : IBillogramCallbacks
 	{
 		[JsonProperty("url")]
 		public string Url { get; set; }

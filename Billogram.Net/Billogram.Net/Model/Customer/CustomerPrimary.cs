@@ -1,9 +1,10 @@
+using Billogram.Net.Interface.ICustomer;
 using Billogram.Net.Utility;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.Customer
 {
-	public class CustomerPrimary
+	public class CustomerPrimary : ICustomerPrimary
 	{
 		[Check(CheckLength = 1)]
 		[JsonProperty("street_address")]

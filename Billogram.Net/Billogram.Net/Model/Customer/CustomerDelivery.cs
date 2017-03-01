@@ -1,8 +1,9 @@
+using Billogram.Net.Interface.ICustomer;
 using Newtonsoft.Json;
 
 namespace Billogram.Net.Model.Customer
 {
-	public class CustomerDelivery
+	public class CustomerDelivery : ICustomerDelivery
 	{
 		[JsonProperty("name")]
 		public string CustomerDeliveryName { get; set; }
