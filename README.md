@@ -1,6 +1,6 @@
 # Billogram .NET
 
-A simple .net wrapper for Billogram API.
+A simple .net wrapper for Billogram API. [A sample example on how to implement Billogram in your solution has been demonstrated here](https://stpriyanka.wordpress.com/2017/03/02/convert-text-to-html/).
 
 ##Installation
 
