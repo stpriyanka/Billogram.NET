@@ -40,7 +40,7 @@ namespace Billogram.Net.Utility
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
 				Convert.ToBase64String(byteArray));
 			_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-			_baseUrl = "https://sandbox.billogram.com/api/v2/";
+			_baseUrl = "https://billogram.com/api/v2/";
 		}
 
 
