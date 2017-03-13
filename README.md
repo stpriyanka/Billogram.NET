@@ -8,8 +8,7 @@ To install Billogram, run the following command in the Package Manager Console
 
 ```
    PM> Install-Package Billogram 
-               OR
-   PM> Install-Package BillogramPackage
+
 ```
 For more details about the package should be found [here](https://www.nuget.org/packages/BillogramPackage/). 
 
